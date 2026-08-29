@@ -7,6 +7,7 @@
 
     go build -o mdx .
     GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o mdx.exe .
+    $env:GOOS="windows"; $env:GOARCH="amd64"; go build -o mdx.exe .
 
 ## Использование
 
