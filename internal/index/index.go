@@ -11,8 +11,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/Quette420/go_rag/internal/markdown"
-	"github.com/Quette420/go_rag/internal/textproc"
+	"github.com/Quette420/mdx_search/internal/markdown"
+	"github.com/Quette420/mdx_search/internal/textproc"
 )
 
 type Chunk struct {

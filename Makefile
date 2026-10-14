@@ -1,6 +1,6 @@
 BINARY  := mdx
 VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
-LDFLAGS := -s -w -X github.com/Quette420/go_rag/internal/cli.Version=$(VERSION)
+LDFLAGS := -s -w -X github.com/Quette420/mdx_search/internal/cli.Version=$(VERSION)
 
 .PHONY: build test vet fmt demo release clean
 

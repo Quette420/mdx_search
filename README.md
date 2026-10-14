@@ -1,6 +1,6 @@
 # mdx
 
-[![CI](https://github.com/Quette420/go_rag/actions/workflows/ci.yml/badge.svg)](https://github.com/Quette420/go_rag/actions/workflows/ci.yml)
+[![CI](https://github.com/Quette420/mdx_search/actions/workflows/ci.yml/badge.svg)](https://github.com/Quette420/mdx_search/actions/workflows/ci.yml)
 
 Fast local search and an overview map for a folder of Markdown notes — a
 research journal, an Obsidian vault, project docs, a reverse-engineering
@@ -37,14 +37,14 @@ $ mdx search AllocateChannelSequence
 ## Install
 
 ```sh
-go install github.com/Quette420/go_rag/cmd/mdx@latest
+go install github.com/Quette420/mdx_search/cmd/mdx@latest
 ```
 
 Or build from source:
 
 ```sh
-git clone https://github.com/Quette420/go_rag.git
-cd go_rag
+git clone https://github.com/Quette420/mdx_search.git
+cd mdx_search
 go build -o mdx ./cmd/mdx          # or: make build
 ```
 

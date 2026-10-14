@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Quette420/go_rag/internal/index"
-	"github.com/Quette420/go_rag/internal/textproc"
+	"github.com/Quette420/mdx_search/internal/index"
+	"github.com/Quette420/mdx_search/internal/textproc"
 )
 
 const (

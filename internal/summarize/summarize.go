@@ -15,7 +15,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Quette420/go_rag/internal/index"
+	"github.com/Quette420/mdx_search/internal/index"
 )
 
 const (

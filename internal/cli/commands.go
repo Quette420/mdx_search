@@ -12,10 +12,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Quette420/go_rag/internal/digest"
-	"github.com/Quette420/go_rag/internal/index"
-	"github.com/Quette420/go_rag/internal/search"
-	"github.com/Quette420/go_rag/internal/summarize"
+	"github.com/Quette420/mdx_search/internal/digest"
+	"github.com/Quette420/mdx_search/internal/index"
+	"github.com/Quette420/mdx_search/internal/search"
+	"github.com/Quette420/mdx_search/internal/summarize"
 )
 
 const defaultDigestFile = "INDEX.md"

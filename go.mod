@@ -1,3 +1,3 @@
-module github.com/Quette420/go_rag
+module github.com/Quette420/mdx_search
 
 go 1.22
