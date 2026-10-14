@@ -1,4 +1,7 @@
-package main
+// Package textproc turns free text into search terms: it splits identifiers
+// (CamelCase, snake_case, letter/digit boundaries), applies light stemming for
+// English and Russian, and adds a coarse prefix key for recall.
+package textproc
 
 import (
 	"regexp"
@@ -8,9 +11,9 @@ import (
 
 var hexRe = regexp.MustCompile(`^0[xX][0-9a-fA-F]+$`)
 
-// identLike reports whether a query term looks like a symbol or an address,
+// IdentLike reports whether a query term looks like a symbol or an address,
 // in which case exact substring matching should outrank fuzzy BM25 hits.
-func identLike(s string) bool {
+func IdentLike(s string) bool {
 	if hexRe.MatchString(s) {
 		return true
 	}
@@ -29,10 +32,10 @@ func identLike(s string) bool {
 	return hasUpper && hasLower && len(s) > 3
 }
 
-// tokenize splits text into search terms. Letters (any script), digits and '_'
+// Tokenize splits text into search terms. Letters (any script), digits and '_'
 // form a raw token; each raw token is then expanded into its sub-words so that
 // "stReplicatedStateFSM" is findable as "replicated", "state" or "fsm".
-func tokenize(s string) []string {
+func Tokenize(s string) []string {
 	var out []string
 	cur := make([]rune, 0, 32)
 	flush := func() {
@@ -70,8 +73,8 @@ func expand(tok string) []string {
 			}
 		}
 	}
-	// Morphological variants: same rules run at index and query time, so
-	// "гипотезы" reaches "Гипотеза" and "replicated" reaches "replication".
+	// Morphological variants: the same rules run at index and query time, so
+	// "replicated" reaches "replication" (and Russian plurals reach singulars).
 	for _, w := range append([]string{}, res...) {
 		if s := stem(w); s != w {
 			res = append(res, s)
@@ -80,7 +83,7 @@ func expand(tok string) []string {
 			res = append(res, p)
 		}
 	}
-	return dedupe(res)
+	return Dedupe(res)
 }
 
 const prefixLen = 6
@@ -155,7 +158,8 @@ func camelSplit(s string) []string {
 	return append(out, string(rs[start:]))
 }
 
-func dedupe(in []string) []string {
+// Dedupe removes repeated strings in place, keeping first occurrences.
+func Dedupe(in []string) []string {
 	seen := make(map[string]bool, len(in))
 	out := in[:0]
 	for _, s := range in {

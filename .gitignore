@@ -1,0 +1,18 @@
+# Binaries
+/mdx
+/mdx.exe
+/dist/
+*.exe
+*.test
+*.out
+
+# mdx index and generated digests
+.mdx/
+INDEX.md
+
+# Editors / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
