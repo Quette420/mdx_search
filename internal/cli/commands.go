@@ -38,6 +38,9 @@ func cmdIndex(args []string, out io.Writer) error {
 	}
 	ix, err := index.Load(db)
 	if err != nil {
+		if !os.IsNotExist(err) {
+			return fmt.Errorf("load index %s: %w", db, err)
+		}
 		ix = index.New(root)
 	}
 	ix.Root = root
