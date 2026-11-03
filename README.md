@@ -145,3 +145,15 @@ make test    # go test ./...
 make vet
 make demo    # build and search the sample corpus
 ```
+
+Indexing fails explicitly if a file or subtree cannot be read. A failed scan
+leaves both the in-memory index and the saved database unchanged; restore access
+and run `mdx index` again. A missing database starts a new index, but a corrupt or
+otherwise unreadable database is reported instead of silently overwritten.
+Keep a backup before deliberately removing a damaged database to rebuild it.
+
+CI runs vet, tests and the CLI build on Linux, Windows and macOS with Go 1.26.7,
+plus Go 1.22.12 on Linux to retain minimum-version coverage. Older Go linkers can
+produce test binaries that macOS 26 refuses to load (`missing LC_UUID`); see the
+[Go linker release notes](https://go.dev/doc/go1.24#linker).
+No platform or package is excluded to work around that loader failure.

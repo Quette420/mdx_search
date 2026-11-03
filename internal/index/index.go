@@ -5,6 +5,7 @@ package index
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -86,7 +87,18 @@ var skipDirs = map[string]bool{
 
 // Crawl walks root and re-parses only files whose content hash changed.
 func (ix *Index) Crawl(root string, opt CrawlOptions) (Stats, error) {
+	return ix.crawl(root, opt, os.ReadFile)
+}
+
+func (ix *Index) crawl(root string, opt CrawlOptions, readFile func(string) ([]byte, error)) (Stats, error) {
 	var st Stats
+	// Keep changes pending until the complete scan succeeds. An unreadable file
+	// or subtree must not turn into a deletion or leave a half-updated index.
+	type update struct {
+		path, hash, text string
+		mtime            int64
+	}
+	var updates []update
 	exts := opt.Extensions
 	if len(exts) == 0 {
 		exts = DefaultExtensions
@@ -94,7 +106,7 @@ func (ix *Index) Crawl(root string, opt CrawlOptions) (Stats, error) {
 	seen := map[string]bool{}
 	err := filepath.WalkDir(root, func(p string, d fs.DirEntry, e error) error {
 		if e != nil {
-			return nil
+			return fmt.Errorf("walk %q: %w", p, e)
 		}
 		if d.IsDir() {
 			// The root itself is always walked, even if hidden (e.g. ~/.notes).
@@ -114,9 +126,9 @@ func (ix *Index) Crawl(root string, opt CrawlOptions) (Stats, error) {
 		if excluded(rel, opt.Exclude) {
 			return nil
 		}
-		data, rerr := os.ReadFile(p)
+		data, rerr := readFile(p)
 		if rerr != nil {
-			return nil
+			return fmt.Errorf("read %q: %w", p, rerr)
 		}
 		sum := sha256.Sum256(data)
 		h := hex.EncodeToString(sum[:8])
@@ -124,21 +136,24 @@ func (ix *Index) Crawl(root string, opt CrawlOptions) (Stats, error) {
 		if old, ok := ix.Files[rel]; ok && old.Hash == h {
 			return nil
 		}
-		if _, ok := ix.Files[rel]; ok {
-			ix.dropFile(rel)
-			st.Updated++
-		} else {
-			st.Added++
-		}
 		var mt int64
 		if info, _ := d.Info(); info != nil {
 			mt = info.ModTime().Unix()
 		}
-		ix.addFile(rel, h, mt, string(data))
+		updates = append(updates, update{rel, h, string(data), mt})
 		return nil
 	})
 	if err != nil {
 		return st, err
+	}
+	for _, u := range updates {
+		if _, ok := ix.Files[u.path]; ok {
+			ix.dropFile(u.path)
+			st.Updated++
+		} else {
+			st.Added++
+		}
+		ix.addFile(u.path, u.hash, u.mtime, u.text)
 	}
 	for rel := range ix.Files {
 		if !seen[rel] {
